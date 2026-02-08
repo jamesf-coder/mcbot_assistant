@@ -49,10 +49,11 @@ Edit `bot.conf` (now JSON) and add your settings. Example `bot.conf` content:
 ```json
 {
   "matrix_password": "YOUR_MATRIX_PASSWORD_HERE",
-  "matrix_user_id": "autobot_1981:matrix.org",
+  "matrix_user_id": "your_bot_id:matrix.org",
   "matrix_homeserver": "https://matrix.org",
   "ollama_url": "http://llm.fritz.box:11434",
-  "model": "qwen2.5-coder:7b"
+  "model": "qwen2.5-coder:7b",
+  "target_user": "@your_matrix_id:matrix.org"
 }
 ```
 
@@ -62,6 +63,7 @@ Edit `bot.conf` (now JSON) and add your settings. Example `bot.conf` content:
 - `matrix_homeserver`: Your Matrix homeserver URL (e.g., `https://matrix.org`)
 - `ollama_url`: URL where Ollama is running (default: `http://llm.fritz.box:11434`)
 - `model`: Name of the Ollama model to use (e.g., `qwen2.5-coder:7b`, `mistral`, `neural-chat`)
+- `target_user`: The Matrix user ID to DM by default (e.g., `@youruser:matrix.org`)
 
 **Alternative**: Set the `MATRIX_PASSWORD` environment variable instead of the config file:
 ```bash

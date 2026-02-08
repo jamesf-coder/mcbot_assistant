@@ -35,12 +35,36 @@ def update_state(updates: dict, path='./config/state.json'):
     save_state(state, path)
     return state
 
+def load_config(path='bot.conf'):
+    """Load configuration from JSON `bot.conf` with sensible defaults."""
+    cfg = {}
+    try:
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                cfg = json.load(f) or {}
+    except Exception as e:
+        print(f"Warning: failed to read config {path}: {type(e).__name__}: {e}")
+    return cfg
+
+
 async def main():
-    client = AsyncClient("https://matrix.org", "@autobot_1981:matrix.org")
+    # Load configuration
+    cfg = load_config()
+    homeserver = cfg['matrix_homeserver']
+    user_id = cfg['matrix_user_id']
+    password = cfg['matrix_password']
+
+    client = AsyncClient(homeserver, user_id)
     
     try:
+        # Check for password presence
+        if not password or password == "your_matrix_password_here":
+            print("Error: Matrix password not found in bot.conf.")
+            await client.close()
+            return
+
         # Attempt login
-        login_response = await client.login("$ZcBRik\"hhZ>i]D+E?`[!M>41!pu[}#7fGZPeKL_dx{%jlmR<")
+        login_response = await client.login(password)
         
         # Check if login was successful
         if not isinstance(login_response, LoginResponse):
@@ -54,7 +78,7 @@ async def main():
         # await list_rooms(client)
 
         # Send a direct message to a specific user
-        target_user = "@c0d3glitch:matrix.org"
+        target_user = cfg['target_user']
         try:
             # Try to use saved dm_room_id from state
             sent = False
@@ -67,7 +91,7 @@ async def main():
                     message_response = await client.room_send(
                         room_id=room_id,
                         message_type="m.room.message",
-                        content={"msgtype": "m.text", "body": "Hello @c0d3glitch:matrix.org"}
+                        content={"msgtype": "m.text", "body": "Hello from McBot!"}
                     )
 
                     if isinstance(message_response, RoomSendResponse):
@@ -99,7 +123,7 @@ async def main():
                     message_response = await client.room_send(
                         room_id=room_id,
                         message_type="m.room.message",
-                        content={"msgtype": "m.text", "body": "Hello @c0d3glitch:matrix.org"}
+                        content={"msgtype": "m.text", "body": "Hello World"}
                     )
 
                     # Check if message was sent successfully
